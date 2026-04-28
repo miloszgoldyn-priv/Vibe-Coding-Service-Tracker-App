@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="AutoSerwis">
+  <meta name="theme-color" content="#E24B4A">
+  <link rel="manifest" href="manifest.json">
+  <link rel="apple-touch-icon" href="icons/icon-192.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <title>AutoSerwis</title>
+  <style>
+    :root {
+      --red: #E24B4A;
+      --red-dark: #A32D2D;
+      --red-light: #FCEBEB;
+      --red-text: #791F1F;
+      --amber: #BA7517;
+      --amber-light: #FAEEDA;
+      --amber-text: #633806;
+      --green: #3B6D11;
+      --green-light: #EAF3DE;
+      --green-text: #27500A;
+      --gray: #888780;
+      --gray-light: #F1EFE8;
+      --gray-text: #444441;
+      --bg: #F7F5F0;
+      --card: #FFFFFF;
+      --text: #1A1A18;
+      --text-sec: #5F5E5A;
+      --text-hint: #B4B2A9;
+      --border: rgba(0,0,0,0.08);
+      --border-med: rgba(0,0,0,0.14);
+      --radius: 16px;
+      --radius-sm: 10px;
+      --safe-top: env(safe-area-inset-top, 0px);
+      --safe-bot: env(safe-area-inset-bottom, 0px);
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+    html, body { height: 100%; background: var(--bg); font-family: 'DM Sans', sans-serif; color: var(--text); overscroll-behavior: none; }
+
+    .app { max-width: 430px; margin: 0 auto; min-height: 100vh; display: flex; flex-direction: column; }
+
+    /* Header */
+    .topbar { background: var(--red); padding: calc(var(--safe-top) + 16px) 20px 20px; position: sticky; top: 0; z-index: 100; }
+    .topbar-inner { display: flex; align-items: center; gap: 12px; }
+    .topbar-icon { width: 40px; height: 40px; background: rgba(255,255,255,0.2); border-radius: 12px; display: flex; align-items: center; justify-content: center; }
+    .topbar-icon svg { width: 22px; height: 22px; fill: white; }
+    .topbar-title { font-size: 20px; font-weight: 600; color: white; letter-spacing: -0.3px; }
+    .topbar-sub { font-size: 13px; color: rgba(255,255,255,0.75); margin-top: 1px; }
+
+    /* Scroll content */
+    .content { flex: 1; padding: 20px 16px calc(var(--safe-bot) + 100px); overflow-y: auto; }
+
+    /* Car card */
+    .car-card { background: var(--card); border-radius: var(--radius); border: 0.5px solid var(--border); padding: 16px; margin-bottom: 20px; display: flex; align-items: center; gap: 14px; }
+    .car-emoji { font-size: 32px; line-height: 1; }
+    .car-details { flex: 1; }
+    .car-name { font-size: 17px; font-weight: 600; color: var(--text); }
+    .car-km { font-size: 13px; color: var(--text-sec); margin-top: 2px; font-family: 'DM Mono', monospace; }
+    .car-btn { background: var(--gray-light); border: none; border-radius: var(--radius-sm); padding: 8px 14px; font-size: 13px; font-weight: 500; color: var(--gray-text); cursor: pointer; font-family: 'DM Sans', sans-serif; }
+    .car-btn:active { opacity: 0.7; }
+
+    /* Stats row */
+    .stats { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-bottom: 20px; }
+    .stat { background: var(--card); border-radius: var(--radius-sm); padding: 14px 12px; border: 0.5px solid var(--border); text-align: center; }
+    .stat-val { font-size: 24px; font-weight: 600; color: var(--text); font-family: 'DM Mono', monospace; }
+    .stat-val.danger { color: var(--red); }
+    .stat-lbl { font-size: 11px; color: var(--text-hint); margin-top: 3px; text-transform: uppercase; letter-spacing: 0.05em; }
+
+    /* Section */
+    .section-label { font-size: 11px; font-weight: 600; color: var(--text-hint); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 10px; padding-left: 4px; }
+
+    /* Service cards */
+    .services { display: flex; flex-direction: column; gap: 10px; margin-bottom: 24px; }
+    .svc-card { background: var(--card); border-radius: var(--radius); border: 0.5px solid var(--border); padding: 16px; display: flex; align-items: center; gap: 14px; cursor: pointer; transition: transform 0.1s; }
+    .svc-card:active { transform: scale(0.98); }
+    .svc-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+    .dot-ok { background: var(--green); }
+    .dot-soon { background: var(--amber); }
+    .dot-overdue { background: var(--red); }
+    .dot-unknown { background: var(--gray); }
+    .svc-body { flex: 1; min-width: 0; }
+    .svc-name { font-size: 16px; font-weight: 500; color: var(--text); }
+    .svc-detail { font-size: 12px; color: var(--text-sec); margin-top: 3px; font-family: 'DM Mono', monospace; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .badge { font-size: 12px; font-weight: 500; padding: 4px 10px; border-radius: 20px; white-space: nowrap; flex-shrink: 0; }
+    .badge-ok { background: var(--green-light); color: var(--green-text); }
+    .badge-soon { background: var(--amber-light); color: var(--amber-text); }
+    .badge-overdue { background: var(--red-light); color: var(--red-text); }
+    .badge-unknown { background: var(--gray-light); color: var(--gray-text); }
+
+    /* History */
+    .history { display: flex; flex-direction: column; gap: 8px; margin-bottom: 24px; }
+    .hist-item { background: var(--card); border-radius: var(--radius-sm); border: 0.5px solid var(--border); padding: 12px 14px; display: flex; align-items: center; gap: 10px; }
+    .hist-date { font-size: 12px; color: var(--text-hint); font-family: 'DM Mono', monospace; min-width: 80px; }
+    .hist-info { flex: 1; min-width: 0; }
+    .hist-name { font-size: 14px; font-weight: 500; color: var(--text); }
+    .hist-note { font-size: 12px; color: var(--text-sec); margin-top: 1px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .hist-cost { font-size: 14px; font-weight: 600; color: var(--text); font-family: 'DM Mono', monospace; white-space: nowrap; }
+    .hist-del { background: none; border: none; color: var(--text-hint); font-size: 18px; cursor: pointer; padding: 0 4px; line-height: 1; flex-shrink: 0; }
+    .hist-del:active { color: var(--red); }
+    .empty-msg { text-align: center; color: var(--text-hint); font-size: 14px; padding: 20px 0; }
+
+    /* FAB */
+    .fab { position: fixed; bottom: calc(var(--safe-bot) + 24px); left: 50%; transform: translateX(-50%); background: var(--red); color: white; border: none; border-radius: 30px; padding: 16px 32px; font-size: 16px; font-weight: 600; font-family: 'DM Sans', sans-serif; cursor: pointer; box-shadow: 0 4px 20px rgba(226,75,74,0.4); display: flex; align-items: center; gap: 8px; white-space: nowrap; z-index: 90; }
+    .fab:active { background: var(--red-dark); transform: translateX(-50%) scale(0.97); }
+
+    /* Modal */
+    .overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.45); z-index: 200; display: flex; align-items: flex-end; justify-content: center; opacity: 0; pointer-events: none; transition: opacity 0.25s; }
+    .overlay.open { opacity: 1; pointer-events: all; }
+    .sheet { background: var(--bg); border-radius: 24px 24px 0 0; padding: 0 20px calc(var(--safe-bot) + 24px); width: 100%; max-width: 430px; transform: translateY(100%); transition: transform 0.3s cubic-bezier(0.32,0.72,0,1); max-height: 92vh; overflow-y: auto; }
+    .overlay.open .sheet { transform: translateY(0); }
+    .sheet-handle { width: 40px; height: 4px; background: var(--border-med); border-radius: 2px; margin: 14px auto 20px; }
+    .sheet h2 { font-size: 20px; font-weight: 600; margin-bottom: 20px; color: var(--text); }
+    .field { margin-bottom: 16px; }
+    .field label { display: block; font-size: 13px; font-weight: 500; color: var(--text-sec); margin-bottom: 6px; }
+    .field input, .field select { width: 100%; padding: 13px 14px; background: var(--card); border: 0.5px solid var(--border-med); border-radius: var(--radius-sm); font-size: 16px; font-family: 'DM Sans', sans-serif; color: var(--text); outline: none; appearance: none; -webkit-appearance: none; }
+    .field input:focus, .field select:focus { border-color: var(--red); }
+    .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .btn-row { display: flex; gap: 10px; margin-top: 24px; }
+    .btn-save { flex: 1; padding: 15px; background: var(--red); color: white; border: none; border-radius: var(--radius-sm); font-size: 16px; font-weight: 600; font-family: 'DM Sans', sans-serif; cursor: pointer; }
+    .btn-save:active { background: var(--red-dark); }
+    .btn-cancel { padding: 15px 20px; background: var(--gray-light); color: var(--gray-text); border: none; border-radius: var(--radius-sm); font-size: 16px; font-weight: 500; font-family: 'DM Sans', sans-serif; cursor: pointer; }
+    .btn-cancel:active { opacity: 0.7; }
+
+    /* Animations */
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+    .svc-card, .hist-item, .stat { animation: fadeIn 0.3s ease both; }
+  </style>
+</head>
+<body>
+<div class="app">
+  <div class="topbar">
+    <div class="topbar-inner">
+      <div class="topbar-icon">
+        <svg viewBox="0 0 24 24"><path d="M21 12c0-1.1-.9-2-2-2h-1.2l-1.4-3.5C16 5.6 15.1 5 14 5H10c-1.1 0-2 .4-2.4 1.5L6.2 10H5c-1.1 0-2 .9-2 2v3h1c0 1.7 1.3 3 3 3s3-1.3 3-3h4c0 1.7 1.3 3 3 3s3-1.3 3-3h1v-3zM7 17c-.6 0-1-.4-1-1s.4-1 1-1 1 .4 1 1-.4 1-1 1zm10 0c-.6 0-1-.4-1-1s.4-1 1-1 1 .4 1 1-.4 1-1 1zM9.5 10l1-2.5h3l1 2.5h-5z"/></svg>
+      </div>
+      <div>
+        <div class="topbar-title">AutoSerwis</div>
+        <div class="topbar-sub" id="topbar-sub">Tracker serwisowy</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="content">
+    <div class="car-card">
+      <div class="car-emoji">🚗</div>
+      <div class="car-details">
+        <div class="car-name" id="car-name-display">Moje Auto</div>
+        <div class="car-km" id="car-km-display">Przebieg: — km</div>
+      </div>
+      <button class="car-btn" onclick="openCarSheet()">Edytuj</button>
+    </div>
+
+    <div class="stats">
+      <div class="stat"><div class="stat-val" id="s-total">4</div><div class="stat-lbl">Serwisy</div></div>
+      <div class="stat"><div class="stat-val danger" id="s-attn">0</div><div class="stat-lbl">Uwaga</div></div>
+      <div class="stat"><div class="stat-val" id="s-cost">0 zł</div><div class="stat-lbl">Koszty</div></div>
+    </div>
+
+    <div class="section-label">Status serwisów</div>
+    <div class="services" id="services-list"></div>
+
+    <div class="section-label">Historia napraw</div>
+    <div class="history" id="history-list"></div>
+  </div>
+
+  <button class="fab" onclick="openAddSheet()">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="white"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
+    Dodaj wpis
+  </button>
+</div>
+
+<!-- Car sheet -->
+<div class="overlay" id="car-overlay" onclick="closeOnBg(event,'car-overlay')">
+  <div class="sheet">
+    <div class="sheet-handle"></div>
+    <h2>Dane pojazdu</h2>
+    <div class="field"><label>Nazwa / model</label><input id="f-carname" placeholder="np. BMW 3 E46"></div>
+    <div class="field"><label>Aktualny przebieg (km)</label><input id="f-carkm" type="number" inputmode="numeric" placeholder="np. 145000"></div>
+    <div class="btn-row">
+      <button class="btn-cancel" onclick="closeSheet('car-overlay')">Anuluj</button>
+      <button class="btn-save" onclick="saveCar()">Zapisz</button>
+    </div>
+  </div>
+</div>
+
+<!-- Service sheet -->
+<div class="overlay" id="svc-overlay" onclick="closeOnBg(event,'svc-overlay')">
+  <div class="sheet">
+    <div class="sheet-handle"></div>
+    <h2 id="svc-sheet-title">Serwis</h2>
+    <div class="field-row">
+      <div class="field"><label>Data serwisu</label><input id="f-sdate" type="date"></div>
+      <div class="field"><label>Przebieg (km)</label><input id="f-skm" type="number" inputmode="numeric" placeholder="—"></div>
+    </div>
+    <div class="btn-row">
+      <button class="btn-cancel" onclick="closeSheet('svc-overlay')">Anuluj</button>
+      <button class="btn-save" onclick="saveService()">Zapisz</button>
+    </div>
+  </div>
+</div>
+
+<!-- Add sheet -->
+<div class="overlay" id="add-overlay" onclick="closeOnBg(event,'add-overlay')">
+  <div class="sheet">
+    <div class="sheet-handle"></div>
+    <h2>Nowy wpis serwisowy</h2>
+    <div class="field"><label>Rodzaj serwisu</label>
+      <select id="f-atype"></select>
+    </div>
+    <div class="field"><label>Notatka (opcjonalnie)</label><input id="f-anote" placeholder="np. filtr powietrza, klocki..."></div>
+    <div class="field-row">
+      <div class="field"><label>Data</label><input id="f-adate" type="date"></div>
+      <div class="field"><label>Koszt (zł)</label><input id="f-acost" type="number" inputmode="decimal" placeholder="0"></div>
+    </div>
+    <div class="btn-row">
+      <button class="btn-cancel" onclick="closeSheet('add-overlay')">Anuluj</button>
+      <button class="btn-save" onclick="saveAdd()">Dodaj</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const DEFAULT_SERVICES = [
+  { id: 'oil', name: 'Wymiana oleju', intervalKm: 10000, intervalDays: 365, lastKm: null, lastDate: null },
+  { id: 'tires', name: 'Opony / sezon', intervalKm: null, intervalDays: 180, lastKm: null, lastDate: null },
+  { id: 'review', name: 'Przegląd techniczny', intervalKm: null, intervalDays: 365, lastKm: null, lastDate: null },
+  { id: 'other', name: 'Inne naprawy / części', intervalKm: null, intervalDays: null, lastKm: null, lastDate: null },
+];
+
+function load() {
+  try {
+    const s = localStorage.getItem('autoserwis_v2');
+    return s ? JSON.parse(s) : { car: { name: '', km: '' }, services: DEFAULT_SERVICES, history: [] };
+  } catch { return { car: { name: '', km: '' }, services: DEFAULT_SERVICES, history: [] }; }
+}
+function save() { try { localStorage.setItem('autoserwis_v2', JSON.stringify(state)); } catch {} }
+
+let state = load();
+let activeSvcId = null;
+
+function getStatus(svc) {
+  if (!svc.lastDate && !svc.lastKm) return 'unknown';
+  const now = new Date(); let pct = 0;
+  if (svc.lastDate && svc.intervalDays) {
+    const diff = (now - new Date(svc.lastDate)) / 86400000;
+    pct = Math.max(pct, diff / svc.intervalDays);
+  }
+  if (svc.lastKm && svc.intervalKm && state.car.km) {
+    const driven = parseInt(state.car.km) - parseInt(svc.lastKm);
+    if (driven > 0) pct = Math.max(pct, driven / svc.intervalKm);
+  }
+  if (pct >= 1) return 'overdue';
+  if (pct >= 0.8) return 'soon';
+  return 'ok';
+}
+
+function badge(st) {
+  const m = { ok: ['OK','badge-ok','dot-ok'], soon: ['Wkrótce','badge-soon','dot-soon'], overdue: ['Zaległe!','badge-overdue','dot-overdue'], unknown: ['Brak danych','badge-unknown','dot-unknown'] };
+  return m[st];
+}
+
+function detailText(svc) {
+  if (!svc.lastDate && !svc.lastKm) return 'Kliknij, aby dodać datę serwisu';
+  const p = [];
+  if (svc.lastDate) p.push(svc.lastDate);
+  if (svc.lastKm) p.push(parseInt(svc.lastKm).toLocaleString('pl') + ' km');
+  return p.join(' · ');
+}
+
+function render() {
+  // car
+  document.getElementById('car-name-display').textContent = state.car.name || 'Moje Auto';
+  document.getElementById('car-km-display').textContent = state.car.km ? 'Przebieg: ' + parseInt(state.car.km).toLocaleString('pl') + ' km' : 'Przebieg: — km';
+  document.getElementById('topbar-sub').textContent = state.car.name || 'Tracker serwisowy';
+
+  // stats
+  let attn = 0;
+  state.services.forEach(s => { const st = getStatus(s); if (st === 'overdue' || st === 'soon') attn++; });
+  const totalCost = state.history.reduce((s, h) => s + (parseFloat(h.cost) || 0), 0);
+  document.getElementById('s-total').textContent = state.services.length;
+  document.getElementById('s-attn').textContent = attn;
+  document.getElementById('s-cost').textContent = totalCost > 0 ? Math.round(totalCost).toLocaleString('pl') + ' zł' : '0 zł';
+
+  // services
+  document.getElementById('services-list').innerHTML = state.services.map(svc => {
+    const st = getStatus(svc);
+    const [btxt, bcls, dcls] = badge(st);
+    return `<div class="svc-card" onclick="openSvcSheet('${svc.id}')">
+      <div class="svc-dot ${dcls}"></div>
+      <div class="svc-body">
+        <div class="svc-name">${svc.name}</div>
+        <div class="svc-detail">${detailText(svc)}</div>
+      </div>
+      <span class="badge ${bcls}">${btxt}</span>
+    </div>`;
+  }).join('');
+
+  // history
+  const hl = document.getElementById('history-list');
+  if (!state.history.length) { hl.innerHTML = '<div class="empty-msg">Brak wpisów — dodaj pierwszy serwis!</div>'; return; }
+  hl.innerHTML = [...state.history].reverse().map((h, ri) => {
+    const i = state.history.length - 1 - ri;
+    return `<div class="hist-item">
+      <span class="hist-date">${h.date}</span>
+      <div class="hist-info">
+        <div class="hist-name">${h.service}</div>
+        ${h.note ? `<div class="hist-note">${h.note}</div>` : ''}
+      </div>
+      <span class="hist-cost">${h.cost ? Math.round(h.cost).toLocaleString('pl') + ' zł' : '—'}</span>
+      <button class="hist-del" onclick="delHistory(${i})">×</button>
+    </div>`;
+  }).join('');
+}
+
+function openSheet(id) { document.getElementById(id).classList.add('open'); }
+function closeSheet(id) { document.getElementById(id).classList.remove('open'); }
+function closeOnBg(e, id) { if (e.target === document.getElementById(id)) closeSheet(id); }
+
+function openCarSheet() {
+  document.getElementById('f-carname').value = state.car.name || '';
+  document.getElementById('f-carkm').value = state.car.km || '';
+  openSheet('car-overlay');
+}
+function saveCar() {
+  state.car.name = document.getElementById('f-carname').value;
+  state.car.km = document.getElementById('f-carkm').value;
+  save(); closeSheet('car-overlay'); render();
+}
+
+function openSvcSheet(id) {
+  activeSvcId = id;
+  const svc = state.services.find(s => s.id === id);
+  document.getElementById('svc-sheet-title').textContent = svc.name;
+  document.getElementById('f-sdate').value = svc.lastDate || '';
+  document.getElementById('f-skm').value = svc.lastKm || '';
+  openSheet('svc-overlay');
+}
+function saveService() {
+  const svc = state.services.find(s => s.id === activeSvcId);
+  svc.lastDate = document.getElementById('f-sdate').value;
+  svc.lastKm = document.getElementById('f-skm').value;
+  save(); closeSheet('svc-overlay'); render();
+}
+
+function openAddSheet() {
+  const sel = document.getElementById('f-atype');
+  sel.innerHTML = state.services.map(s => `<option value="${s.name}">${s.name}</option>`).join('') + '<option value="Inny">Inny serwis</option>';
+  document.getElementById('f-anote').value = '';
+  document.getElementById('f-adate').value = new Date().toISOString().split('T')[0];
+  document.getElementById('f-acost').value = '';
+  openSheet('add-overlay');
+}
+function saveAdd() {
+  const type = document.getElementById('f-atype').value;
+  const note = document.getElementById('f-anote').value;
+  const date = document.getElementById('f-adate').value;
+  const cost = parseFloat(document.getElementById('f-acost').value) || 0;
+  if (!date) return;
+  state.history.push({ service: type, note, date, cost });
+  const svc = state.services.find(s => s.name === type);
+  if (svc) { svc.lastDate = date; if (state.car.km) svc.lastKm = state.car.km; }
+  save(); closeSheet('add-overlay'); render();
+}
+function delHistory(i) {
+  if (confirm('Usunąć ten wpis?')) { state.history.splice(i, 1); save(); render(); }
+}
+
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('sw.js').catch(() => {});
+}
+
+render();
+</script>
+</body>
+</html>
