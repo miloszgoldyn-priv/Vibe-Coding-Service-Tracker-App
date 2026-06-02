@@ -14,155 +14,187 @@
   <title>AutoSerwis</title>
   <style>
     :root {
-      --red: #E24B4A;
-      --red-dark: #A32D2D;
-      --red-light: #FCEBEB;
-      --red-text: #791F1F;
-      --amber: #BA7517;
-      --amber-light: #FAEEDA;
-      --amber-text: #633806;
-      --green: #3B6D11;
-      --green-light: #EAF3DE;
-      --green-text: #27500A;
-      --gray: #888780;
-      --gray-light: #F1EFE8;
-      --gray-text: #444441;
-      --bg: #F7F5F0;
-      --card: #FFFFFF;
-      --text: #1A1A18;
-      --text-sec: #5F5E5A;
-      --text-hint: #B4B2A9;
-      --border: rgba(0,0,0,0.08);
-      --border-med: rgba(0,0,0,0.14);
-      --radius: 16px;
-      --radius-sm: 10px;
-      --safe-top: env(safe-area-inset-top, 0px);
-      --safe-bot: env(safe-area-inset-bottom, 0px);
+      --red:#E24B4A;--red-dark:#A32D2D;--red-light:#FCEBEB;--red-text:#791F1F;
+      --amber:#BA7517;--amber-light:#FAEEDA;--amber-text:#633806;
+      --green:#3B6D11;--green-light:#EAF3DE;--green-text:#27500A;
+      --blue:#185FA5;--blue-light:#E6F1FB;--blue-text:#0C447C;
+      --gray:#888780;--gray-light:#F1EFE8;--gray-text:#444441;
+      --bg:#F7F5F0;--card:#FFFFFF;--text:#1A1A18;--text-sec:#5F5E5A;--text-hint:#B4B2A9;
+      --border:rgba(0,0,0,0.08);--border-med:rgba(0,0,0,0.14);
+      --radius:16px;--radius-sm:10px;
+      --safe-top:env(safe-area-inset-top,0px);--safe-bot:env(safe-area-inset-bottom,0px);
     }
-    * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
-    html, body { height: 100%; background: var(--bg); font-family: 'DM Sans', sans-serif; color: var(--text); overscroll-behavior: none; }
+    *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+    html,body{height:100%;background:var(--bg);font-family:'DM Sans',sans-serif;color:var(--text);overscroll-behavior:none;}
+    .app{max-width:430px;margin:0 auto;min-height:100vh;display:flex;flex-direction:column;}
 
-    .app { max-width: 430px; margin: 0 auto; min-height: 100vh; display: flex; flex-direction: column; }
+    /* TOPBAR */
+    .topbar{background:var(--red);padding:calc(var(--safe-top) + 14px) 16px 14px;position:sticky;top:0;z-index:100;}
+    .topbar-row{display:flex;align-items:center;gap:10px;}
+    .topbar-icon{width:38px;height:38px;background:rgba(255,255,255,0.2);border-radius:11px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+    .topbar-icon svg{width:20px;height:20px;fill:white;}
+    .topbar-title{font-size:18px;font-weight:600;color:white;letter-spacing:-0.3px;}
 
-    /* Header */
-    .topbar { background: var(--red); padding: calc(var(--safe-top) + 16px) 20px 20px; position: sticky; top: 0; z-index: 100; }
-    .topbar-inner { display: flex; align-items: center; gap: 12px; }
-    .topbar-icon { width: 40px; height: 40px; background: rgba(255,255,255,0.2); border-radius: 12px; display: flex; align-items: center; justify-content: center; }
-    .topbar-icon svg { width: 22px; height: 22px; fill: white; }
-    .topbar-title { font-size: 20px; font-weight: 600; color: white; letter-spacing: -0.3px; }
-    .topbar-sub { font-size: 13px; color: rgba(255,255,255,0.75); margin-top: 1px; }
+    /* CAR SWITCHER DROPDOWN */
+    .car-switcher{flex:1;position:relative;}
+    .switcher-btn{width:100%;background:rgba(255,255,255,0.15);border:0.5px solid rgba(255,255,255,0.3);border-radius:10px;padding:7px 12px;display:flex;align-items:center;gap:8px;cursor:pointer;font-family:'DM Sans',sans-serif;}
+    .switcher-btn:active{background:rgba(255,255,255,0.25);}
+    .switcher-car-name{font-size:14px;font-weight:600;color:white;flex:1;text-align:left;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+    .switcher-car-km{font-size:11px;color:rgba(255,255,255,0.7);font-family:'DM Mono',monospace;white-space:nowrap;}
+    .switcher-arrow{color:rgba(255,255,255,0.7);font-size:11px;transition:transform 0.2s;flex-shrink:0;}
+    .switcher-arrow.open{transform:rotate(180deg);}
 
-    /* Scroll content */
-    .content { flex: 1; padding: 20px 16px calc(var(--safe-bot) + 100px); overflow-y: auto; }
+    .switcher-dropdown{position:absolute;top:calc(100% + 8px);left:0;right:0;background:var(--card);border-radius:var(--radius);border:0.5px solid var(--border);box-shadow:0 8px 32px rgba(0,0,0,0.18);z-index:300;overflow:hidden;display:none;}
+    .switcher-dropdown.open{display:block;}
+    .dropdown-car{display:flex;align-items:center;gap:12px;padding:13px 16px;border-bottom:0.5px solid var(--border);cursor:pointer;}
+    .dropdown-car:last-child{border-bottom:none;}
+    .dropdown-car:active{background:var(--gray-light);}
+    .dropdown-car.active{background:var(--red-light);}
+    .dropdown-car-emoji{font-size:22px;line-height:1;}
+    .dropdown-car-info{flex:1;min-width:0;}
+    .dropdown-car-name{font-size:15px;font-weight:500;color:var(--text);}
+    .dropdown-car-km{font-size:12px;color:var(--text-sec);font-family:'DM Mono',monospace;margin-top:1px;}
+    .dropdown-car-check{color:var(--red);font-size:16px;font-weight:600;}
+    .dropdown-divider{border-top:0.5px solid var(--border);}
+    .dropdown-add{display:flex;align-items:center;gap:10px;padding:13px 16px;cursor:pointer;color:var(--red);}
+    .dropdown-add:active{background:var(--red-light);}
+    .dropdown-add-icon{width:32px;height:32px;border-radius:8px;background:var(--red-light);display:flex;align-items:center;justify-content:center;font-size:18px;color:var(--red);flex-shrink:0;}
+    .dropdown-add-text{font-size:15px;font-weight:500;}
 
-    /* Car card */
-    .car-card { background: var(--card); border-radius: var(--radius); border: 0.5px solid var(--border); padding: 16px; margin-bottom: 20px; display: flex; align-items: center; gap: 14px; }
-    .car-emoji { font-size: 32px; line-height: 1; }
-    .car-details { flex: 1; }
-    .car-name { font-size: 17px; font-weight: 600; color: var(--text); }
-    .car-km { font-size: 13px; color: var(--text-sec); margin-top: 2px; font-family: 'DM Mono', monospace; }
-    .car-btn { background: var(--gray-light); border: none; border-radius: var(--radius-sm); padding: 8px 14px; font-size: 13px; font-weight: 500; color: var(--gray-text); cursor: pointer; font-family: 'DM Sans', sans-serif; }
-    .car-btn:active { opacity: 0.7; }
+    /* CONTENT */
+    .content{flex:1;padding:20px 16px calc(var(--safe-bot) + 100px);overflow-y:auto;}
 
-    /* Stats row */
-    .stats { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-bottom: 20px; }
-    .stat { background: var(--card); border-radius: var(--radius-sm); padding: 14px 12px; border: 0.5px solid var(--border); text-align: center; }
-    .stat-val { font-size: 24px; font-weight: 600; color: var(--text); font-family: 'DM Mono', monospace; }
-    .stat-val.danger { color: var(--red); }
-    .stat-lbl { font-size: 11px; color: var(--text-hint); margin-top: 3px; text-transform: uppercase; letter-spacing: 0.05em; }
+    /* STATS */
+    .stats{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:20px;}
+    .stat{background:var(--card);border-radius:var(--radius-sm);padding:14px 12px;border:0.5px solid var(--border);text-align:center;}
+    .stat-val{font-size:22px;font-weight:600;color:var(--text);font-family:'DM Mono',monospace;}
+    .stat-val.danger{color:var(--red);}
+    .stat-lbl{font-size:11px;color:var(--text-hint);margin-top:3px;text-transform:uppercase;letter-spacing:0.05em;}
 
-    /* Section */
-    .section-label { font-size: 11px; font-weight: 600; color: var(--text-hint); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 10px; padding-left: 4px; }
+    .section-label{font-size:11px;font-weight:600;color:var(--text-hint);text-transform:uppercase;letter-spacing:0.1em;margin-bottom:10px;padding-left:4px;}
 
-    /* Service cards */
-    .services { display: flex; flex-direction: column; gap: 10px; margin-bottom: 24px; }
-    .svc-card { background: var(--card); border-radius: var(--radius); border: 0.5px solid var(--border); padding: 16px; display: flex; align-items: center; gap: 14px; cursor: pointer; transition: transform 0.1s; }
-    .svc-card:active { transform: scale(0.98); }
-    .svc-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
-    .dot-ok { background: var(--green); }
-    .dot-soon { background: var(--amber); }
-    .dot-overdue { background: var(--red); }
-    .dot-unknown { background: var(--gray); }
-    .svc-body { flex: 1; min-width: 0; }
-    .svc-name { font-size: 16px; font-weight: 500; color: var(--text); }
-    .svc-detail { font-size: 12px; color: var(--text-sec); margin-top: 3px; font-family: 'DM Mono', monospace; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .badge { font-size: 12px; font-weight: 500; padding: 4px 10px; border-radius: 20px; white-space: nowrap; flex-shrink: 0; }
-    .badge-ok { background: var(--green-light); color: var(--green-text); }
-    .badge-soon { background: var(--amber-light); color: var(--amber-text); }
-    .badge-overdue { background: var(--red-light); color: var(--red-text); }
-    .badge-unknown { background: var(--gray-light); color: var(--gray-text); }
+    /* SERVICES */
+    .services{display:flex;flex-direction:column;gap:10px;margin-bottom:24px;}
+    .svc-card{background:var(--card);border-radius:var(--radius);border:0.5px solid var(--border);padding:16px;display:flex;align-items:center;gap:14px;cursor:pointer;transition:transform 0.1s;}
+    .svc-card:active{transform:scale(0.98);}
+    .svc-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0;}
+    .dot-ok{background:var(--green);}.dot-soon{background:var(--amber);}.dot-overdue{background:var(--red);}.dot-unknown{background:var(--gray);}
+    .svc-body{flex:1;min-width:0;}
+    .svc-name{font-size:16px;font-weight:500;color:var(--text);}
+    .svc-detail{font-size:12px;color:var(--text-sec);margin-top:3px;font-family:'DM Mono',monospace;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+    .badge{font-size:12px;font-weight:500;padding:4px 10px;border-radius:20px;white-space:nowrap;flex-shrink:0;}
+    .badge-ok{background:var(--green-light);color:var(--green-text);}
+    .badge-soon{background:var(--amber-light);color:var(--amber-text);}
+    .badge-overdue{background:var(--red-light);color:var(--red-text);}
+    .badge-unknown{background:var(--gray-light);color:var(--gray-text);}
 
-    /* History */
-    .history { display: flex; flex-direction: column; gap: 8px; margin-bottom: 24px; }
-    .hist-item { background: var(--card); border-radius: var(--radius-sm); border: 0.5px solid var(--border); padding: 12px 14px; display: flex; align-items: center; gap: 10px; }
-    .hist-date { font-size: 12px; color: var(--text-hint); font-family: 'DM Mono', monospace; min-width: 80px; }
-    .hist-info { flex: 1; min-width: 0; }
-    .hist-name { font-size: 14px; font-weight: 500; color: var(--text); }
-    .hist-note { font-size: 12px; color: var(--text-sec); margin-top: 1px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .hist-cost { font-size: 14px; font-weight: 600; color: var(--text); font-family: 'DM Mono', monospace; white-space: nowrap; }
-    .hist-del { background: none; border: none; color: var(--text-hint); font-size: 18px; cursor: pointer; padding: 0 4px; line-height: 1; flex-shrink: 0; }
-    .hist-del:active { color: var(--red); }
-    .empty-msg { text-align: center; color: var(--text-hint); font-size: 14px; padding: 20px 0; }
+    /* TIRES */
+    .tires-section{margin-bottom:24px;}
+    .tires-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;}
+    .tires-add-btn{background:var(--red);color:white;border:none;border-radius:var(--radius-sm);padding:6px 12px;font-size:12px;font-weight:600;font-family:'DM Sans',sans-serif;cursor:pointer;}
+    .tires-add-btn:active{background:var(--red-dark);}
+    .axle-group{background:var(--card);border-radius:var(--radius);border:0.5px solid var(--border);margin-bottom:10px;overflow:hidden;}
+    .axle-header{padding:12px 16px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;user-select:none;}
+    .axle-header:active{background:var(--gray-light);}
+    .axle-label{font-size:13px;font-weight:600;color:var(--text-sec);text-transform:uppercase;letter-spacing:0.08em;display:flex;align-items:center;gap:8px;}
+    .axle-count{background:var(--blue-light);color:var(--blue-text);font-size:11px;font-weight:600;padding:2px 8px;border-radius:20px;}
+    .axle-chevron{font-size:12px;color:var(--text-hint);transition:transform 0.2s;}
+    .axle-chevron.open{transform:rotate(180deg);}
+    .axle-body{border-top:0.5px solid var(--border);}
+    .axle-body.hidden{display:none;}
+    .tire-row{display:flex;align-items:center;gap:12px;padding:12px 16px;border-bottom:0.5px solid var(--border);}
+    .tire-row:last-child{border-bottom:none;}
+    .tire-icon{font-size:20px;flex-shrink:0;}
+    .tire-info{flex:1;min-width:0;}
+    .tire-size{font-size:15px;font-weight:600;color:var(--text);font-family:'DM Mono',monospace;}
+    .tire-meta{font-size:12px;color:var(--text-sec);margin-top:2px;}
+    .tire-season{font-size:11px;font-weight:500;padding:2px 8px;border-radius:20px;flex-shrink:0;}
+    .season-summer{background:#FAEEDA;color:#633806;}
+    .season-winter{background:#E6F1FB;color:#0C447C;}
+    .season-allseason{background:var(--green-light);color:var(--green-text);}
+    .tire-del{background:none;border:none;color:var(--text-hint);font-size:18px;cursor:pointer;padding:0 2px;flex-shrink:0;}
+    .tire-del:active{color:var(--red);}
+    .no-tires{text-align:center;color:var(--text-hint);font-size:13px;padding:16px;}
+
+    /* HISTORY */
+    .history{display:flex;flex-direction:column;gap:8px;margin-bottom:24px;}
+    .hist-item{background:var(--card);border-radius:var(--radius-sm);border:0.5px solid var(--border);padding:12px 14px;display:flex;align-items:center;gap:10px;}
+    .hist-date{font-size:12px;color:var(--text-hint);font-family:'DM Mono',monospace;min-width:80px;}
+    .hist-info{flex:1;min-width:0;}
+    .hist-name{font-size:14px;font-weight:500;color:var(--text);}
+    .hist-note{font-size:12px;color:var(--text-sec);margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+    .hist-cost{font-size:14px;font-weight:600;color:var(--text);font-family:'DM Mono',monospace;white-space:nowrap;}
+    .hist-del{background:none;border:none;color:var(--text-hint);font-size:18px;cursor:pointer;padding:0 4px;line-height:1;flex-shrink:0;}
+    .hist-del:active{color:var(--red);}
+    .empty-msg{text-align:center;color:var(--text-hint);font-size:14px;padding:20px 0;}
 
     /* FAB */
-    .fab { position: fixed; bottom: calc(var(--safe-bot) + 24px); left: 50%; transform: translateX(-50%); background: var(--red); color: white; border: none; border-radius: 30px; padding: 16px 32px; font-size: 16px; font-weight: 600; font-family: 'DM Sans', sans-serif; cursor: pointer; box-shadow: 0 4px 20px rgba(226,75,74,0.4); display: flex; align-items: center; gap: 8px; white-space: nowrap; z-index: 90; }
-    .fab:active { background: var(--red-dark); transform: translateX(-50%) scale(0.97); }
+    .fab{position:fixed;bottom:calc(var(--safe-bot) + 24px);left:50%;transform:translateX(-50%);background:var(--red);color:white;border:none;border-radius:30px;padding:16px 32px;font-size:16px;font-weight:600;font-family:'DM Sans',sans-serif;cursor:pointer;box-shadow:0 4px 20px rgba(226,75,74,0.4);display:flex;align-items:center;gap:8px;white-space:nowrap;z-index:90;}
+    .fab:active{background:var(--red-dark);transform:translateX(-50%) scale(0.97);}
 
-    /* Modal */
-    .overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.45); z-index: 200; display: flex; align-items: flex-end; justify-content: center; opacity: 0; pointer-events: none; transition: opacity 0.25s; }
-    .overlay.open { opacity: 1; pointer-events: all; }
-    .sheet { background: var(--bg); border-radius: 24px 24px 0 0; padding: 0 20px calc(var(--safe-bot) + 24px); width: 100%; max-width: 430px; transform: translateY(100%); transition: transform 0.3s cubic-bezier(0.32,0.72,0,1); max-height: 92vh; overflow-y: auto; }
-    .overlay.open .sheet { transform: translateY(0); }
-    .sheet-handle { width: 40px; height: 4px; background: var(--border-med); border-radius: 2px; margin: 14px auto 20px; }
-    .sheet h2 { font-size: 20px; font-weight: 600; margin-bottom: 20px; color: var(--text); }
-    .field { margin-bottom: 16px; }
-    .field label { display: block; font-size: 13px; font-weight: 500; color: var(--text-sec); margin-bottom: 6px; }
-    .field input, .field select { width: 100%; padding: 13px 14px; background: var(--card); border: 0.5px solid var(--border-med); border-radius: var(--radius-sm); font-size: 16px; font-family: 'DM Sans', sans-serif; color: var(--text); outline: none; appearance: none; -webkit-appearance: none; }
-    .field input:focus, .field select:focus { border-color: var(--red); }
-    .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-    .btn-row { display: flex; gap: 10px; margin-top: 24px; }
-    .btn-save { flex: 1; padding: 15px; background: var(--red); color: white; border: none; border-radius: var(--radius-sm); font-size: 16px; font-weight: 600; font-family: 'DM Sans', sans-serif; cursor: pointer; }
-    .btn-save:active { background: var(--red-dark); }
-    .btn-cancel { padding: 15px 20px; background: var(--gray-light); color: var(--gray-text); border: none; border-radius: var(--radius-sm); font-size: 16px; font-weight: 500; font-family: 'DM Sans', sans-serif; cursor: pointer; }
-    .btn-cancel:active { opacity: 0.7; }
+    /* SHEETS */
+    .overlay{position:fixed;inset:0;background:rgba(0,0,0,0.45);z-index:200;display:flex;align-items:flex-end;justify-content:center;opacity:0;pointer-events:none;transition:opacity 0.25s;}
+    .overlay.open{opacity:1;pointer-events:all;}
+    .sheet{background:var(--bg);border-radius:24px 24px 0 0;padding:0 20px calc(var(--safe-bot) + 24px);width:100%;max-width:430px;transform:translateY(100%);transition:transform 0.3s cubic-bezier(0.32,0.72,0,1);max-height:92vh;overflow-y:auto;}
+    .overlay.open .sheet{transform:translateY(0);}
+    .sheet-handle{width:40px;height:4px;background:var(--border-med);border-radius:2px;margin:14px auto 20px;}
+    .sheet h2{font-size:20px;font-weight:600;margin-bottom:20px;color:var(--text);}
+    .field{margin-bottom:16px;}
+    .field label{display:block;font-size:13px;font-weight:500;color:var(--text-sec);margin-bottom:6px;}
+    .field input,.field select{width:100%;padding:13px 14px;background:var(--card);border:0.5px solid var(--border-med);border-radius:var(--radius-sm);font-size:16px;font-family:'DM Sans',sans-serif;color:var(--text);outline:none;appearance:none;-webkit-appearance:none;}
+    .field input:focus,.field select:focus{border-color:var(--red);}
+    .field-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+    .field-row3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;}
+    .btn-row{display:flex;gap:10px;margin-top:24px;}
+    .btn-save{flex:1;padding:15px;background:var(--red);color:white;border:none;border-radius:var(--radius-sm);font-size:16px;font-weight:600;font-family:'DM Sans',sans-serif;cursor:pointer;}
+    .btn-save:active{background:var(--red-dark);}
+    .btn-cancel{padding:15px 20px;background:var(--gray-light);color:var(--gray-text);border:none;border-radius:var(--radius-sm);font-size:16px;font-weight:500;font-family:'DM Sans',sans-serif;cursor:pointer;}
+    .btn-cancel:active{opacity:0.7;}
+    .btn-danger{padding:15px 20px;background:var(--red-light);color:var(--red-text);border:none;border-radius:var(--radius-sm);font-size:16px;font-weight:500;font-family:'DM Sans',sans-serif;cursor:pointer;}
+    .btn-danger:active{background:var(--red-light);opacity:0.7;}
 
-    /* Animations */
-    @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
-    .svc-card, .hist-item, .stat { animation: fadeIn 0.3s ease both; }
+    .size-preview{font-family:'DM Mono',monospace;font-size:18px;font-weight:600;color:var(--red);text-align:center;padding:12px;background:var(--red-light);border-radius:var(--radius-sm);margin-bottom:16px;letter-spacing:1px;}
+
+    @keyframes fadeIn{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:none;}}
+    .svc-card,.hist-item,.stat,.axle-group{animation:fadeIn 0.3s ease both;}
   </style>
 </head>
 <body>
 <div class="app">
   <div class="topbar">
-    <div class="topbar-inner">
+    <div class="topbar-row">
       <div class="topbar-icon">
         <svg viewBox="0 0 24 24"><path d="M21 12c0-1.1-.9-2-2-2h-1.2l-1.4-3.5C16 5.6 15.1 5 14 5H10c-1.1 0-2 .4-2.4 1.5L6.2 10H5c-1.1 0-2 .9-2 2v3h1c0 1.7 1.3 3 3 3s3-1.3 3-3h4c0 1.7 1.3 3 3 3s3-1.3 3-3h1v-3zM7 17c-.6 0-1-.4-1-1s.4-1 1-1 1 .4 1 1-.4 1-1 1zm10 0c-.6 0-1-.4-1-1s.4-1 1-1 1 .4 1 1-.4 1-1 1zM9.5 10l1-2.5h3l1 2.5h-5z"/></svg>
       </div>
-      <div>
-        <div class="topbar-title">AutoSerwis</div>
-        <div class="topbar-sub" id="topbar-sub">Tracker serwisowy</div>
+      <div class="topbar-title" style="margin-right:8px;">AutoSerwis</div>
+      <div class="car-switcher">
+        <button class="switcher-btn" id="switcher-btn" onclick="toggleDropdown()">
+          <span class="switcher-car-name" id="switcher-name">Wybierz auto</span>
+          <span class="switcher-car-km" id="switcher-km"></span>
+          <span class="switcher-arrow" id="switcher-arrow">▼</span>
+        </button>
+        <div class="switcher-dropdown" id="switcher-dropdown"></div>
       </div>
     </div>
   </div>
 
-  <div class="content">
-    <div class="car-card">
-      <div class="car-emoji">🚗</div>
-      <div class="car-details">
-        <div class="car-name" id="car-name-display">Moje Auto</div>
-        <div class="car-km" id="car-km-display">Przebieg: — km</div>
-      </div>
-      <button class="car-btn" onclick="openCarSheet()">Edytuj</button>
-    </div>
-
+  <div class="content" id="main-content">
     <div class="stats">
-      <div class="stat"><div class="stat-val" id="s-total">4</div><div class="stat-lbl">Serwisy</div></div>
-      <div class="stat"><div class="stat-val danger" id="s-attn">0</div><div class="stat-lbl">Uwaga</div></div>
-      <div class="stat"><div class="stat-val" id="s-cost">0 zł</div><div class="stat-lbl">Koszty</div></div>
+      <div class="stat"><div class="stat-val" id="s-total">—</div><div class="stat-lbl">Serwisy</div></div>
+      <div class="stat"><div class="stat-val danger" id="s-attn">—</div><div class="stat-lbl">Uwaga</div></div>
+      <div class="stat"><div class="stat-val" id="s-cost">—</div><div class="stat-lbl">Koszty</div></div>
     </div>
 
     <div class="section-label">Status serwisów</div>
     <div class="services" id="services-list"></div>
+
+    <div class="tires-section">
+      <div class="tires-header">
+        <div class="section-label" style="margin-bottom:0;">Opony</div>
+        <button class="tires-add-btn" onclick="openTireSheet()">+ Dodaj oponę</button>
+      </div>
+      <div id="tires-list"></div>
+    </div>
 
     <div class="section-label">Historia napraw</div>
     <div class="history" id="history-list"></div>
@@ -174,14 +206,14 @@
   </button>
 </div>
 
-<!-- Car sheet -->
+<!-- Car sheet (add/edit) -->
 <div class="overlay" id="car-overlay" onclick="closeOnBg(event,'car-overlay')">
   <div class="sheet">
     <div class="sheet-handle"></div>
-    <h2>Dane pojazdu</h2>
+    <h2 id="car-sheet-title">Nowe auto</h2>
     <div class="field"><label>Nazwa / model</label><input id="f-carname" placeholder="np. BMW 3 E46"></div>
     <div class="field"><label>Aktualny przebieg (km)</label><input id="f-carkm" type="number" inputmode="numeric" placeholder="np. 145000"></div>
-    <div class="btn-row">
+    <div class="btn-row" id="car-btn-row">
       <button class="btn-cancel" onclick="closeSheet('car-overlay')">Anuluj</button>
       <button class="btn-save" onclick="saveCar()">Zapisz</button>
     </div>
@@ -204,14 +236,42 @@
   </div>
 </div>
 
-<!-- Add sheet -->
+<!-- Tire sheet -->
+<div class="overlay" id="tire-overlay" onclick="closeOnBg(event,'tire-overlay')">
+  <div class="sheet">
+    <div class="sheet-handle"></div>
+    <h2>Nowa opona</h2>
+    <div class="size-preview" id="tire-preview">— / — / —</div>
+    <div class="field-row3">
+      <div class="field"><label>Szerokość</label><input id="f-tw" type="number" inputmode="numeric" placeholder="245" oninput="updateTirePreview()"></div>
+      <div class="field"><label>Profil</label><input id="f-tp" type="number" inputmode="numeric" placeholder="45" oninput="updateTirePreview()"></div>
+      <div class="field"><label>Felga (cal)</label><input id="f-tr" type="number" inputmode="numeric" placeholder="17" oninput="updateTirePreview()"></div>
+    </div>
+    <div class="field-row">
+      <div class="field"><label>Rok produkcji</label><input id="f-tyear" type="number" inputmode="numeric" placeholder="np. 2021"></div>
+      <div class="field"><label>Oś</label>
+        <select id="f-taxle"><option value="front">Przednia</option><option value="rear">Tylna</option></select>
+      </div>
+    </div>
+    <div class="field-row">
+      <div class="field"><label>Sezon</label>
+        <select id="f-tseason"><option value="summer">Letnie</option><option value="winter">Zimowe</option><option value="allseason">Całoroczne</option></select>
+      </div>
+      <div class="field"><label>Marka / model</label><input id="f-tbrand" placeholder="np. Michelin PS4"></div>
+    </div>
+    <div class="btn-row">
+      <button class="btn-cancel" onclick="closeSheet('tire-overlay')">Anuluj</button>
+      <button class="btn-save" onclick="saveTire()">Zapisz</button>
+    </div>
+  </div>
+</div>
+
+<!-- Add service entry sheet -->
 <div class="overlay" id="add-overlay" onclick="closeOnBg(event,'add-overlay')">
   <div class="sheet">
     <div class="sheet-handle"></div>
     <h2>Nowy wpis serwisowy</h2>
-    <div class="field"><label>Rodzaj serwisu</label>
-      <select id="f-atype"></select>
-    </div>
+    <div class="field"><label>Rodzaj serwisu</label><select id="f-atype"></select></div>
     <div class="field"><label>Notatka (opcjonalnie)</label><input id="f-anote" placeholder="np. filtr powietrza, klocki..."></div>
     <div class="field-row">
       <div class="field"><label>Data</label><input id="f-adate" type="date"></div>
@@ -225,155 +285,300 @@
 </div>
 
 <script>
-const DEFAULT_SERVICES = [
-  { id: 'oil', name: 'Wymiana oleju', intervalKm: 10000, intervalDays: 365, lastKm: null, lastDate: null },
-  { id: 'tires', name: 'Opony / sezon', intervalKm: null, intervalDays: 180, lastKm: null, lastDate: null },
-  { id: 'review', name: 'Przegląd techniczny', intervalKm: null, intervalDays: 365, lastKm: null, lastDate: null },
-  { id: 'other', name: 'Inne naprawy / części', intervalKm: null, intervalDays: null, lastKm: null, lastDate: null },
+const DEFAULT_SERVICES = () => [
+  {id:'oil',name:'Wymiana oleju',intervalKm:10000,intervalDays:365,lastKm:null,lastDate:null},
+  {id:'tires',name:'Opony / sezon',intervalKm:null,intervalDays:180,lastKm:null,lastDate:null},
+  {id:'review',name:'Przegląd techniczny',intervalKm:null,intervalDays:365,lastKm:null,lastDate:null},
+  {id:'other',name:'Inne naprawy / części',intervalKm:null,intervalDays:null,lastKm:null,lastDate:null},
 ];
 
-function load() {
-  try {
-    const s = localStorage.getItem('autoserwis_v2');
-    return s ? JSON.parse(s) : { car: { name: '', km: '' }, services: DEFAULT_SERVICES, history: [] };
-  } catch { return { car: { name: '', km: '' }, services: DEFAULT_SERVICES, history: [] }; }
+function newCar(name, km) {
+  return { id: Date.now().toString(), name: name||'', km: km||'', services: DEFAULT_SERVICES(), history: [], tires: [] };
 }
-function save() { try { localStorage.setItem('autoserwis_v2', JSON.stringify(state)); } catch {} }
 
-let state = load();
+function loadState() {
+  try {
+    const s = localStorage.getItem('autoserwis_v4');
+    if (s) return JSON.parse(s);
+  } catch {}
+  // migrate from old v3
+  try {
+    const old = localStorage.getItem('autoserwis_v3');
+    if (old) {
+      const o = JSON.parse(old);
+      const car = newCar(o.car?.name, o.car?.km);
+      car.services = o.services || DEFAULT_SERVICES();
+      car.history = o.history || [];
+      car.tires = o.tires || [];
+      return { cars: [car], activeId: car.id };
+    }
+  } catch {}
+  const car = newCar('Moje Auto', '');
+  return { cars: [car], activeId: car.id };
+}
+
+function saveState() { try { localStorage.setItem('autoserwis_v4', JSON.stringify(state)); } catch {} }
+
+let state = loadState();
 let activeSvcId = null;
+let axleOpen = { front: true, rear: true };
+let dropdownOpen = false;
+let editingCarId = null;
 
+function activeCar() { return state.cars.find(c => c.id === state.activeId) || state.cars[0]; }
+
+// DROPDOWN
+function toggleDropdown() {
+  dropdownOpen = !dropdownOpen;
+  renderDropdown();
+  if (dropdownOpen) {
+    setTimeout(() => document.addEventListener('click', closeDropdownOutside), 0);
+  }
+}
+function closeDropdownOutside(e) {
+  if (!document.getElementById('switcher-dropdown').contains(e.target) && e.target !== document.getElementById('switcher-btn')) {
+    dropdownOpen = false;
+    renderDropdown();
+    document.removeEventListener('click', closeDropdownOutside);
+  }
+}
+function renderDropdown() {
+  const arrow = document.getElementById('switcher-arrow');
+  const dd = document.getElementById('switcher-dropdown');
+  arrow.className = 'switcher-arrow' + (dropdownOpen ? ' open' : '');
+  dd.className = 'switcher-dropdown' + (dropdownOpen ? ' open' : '');
+
+  const car = activeCar();
+  document.getElementById('switcher-name').textContent = car.name || 'Bez nazwy';
+  document.getElementById('switcher-km').textContent = car.km ? parseInt(car.km).toLocaleString('pl') + ' km' : '';
+
+  dd.innerHTML = state.cars.map(c => `
+    <div class="dropdown-car ${c.id === state.activeId ? 'active' : ''}" onclick="selectCar('${c.id}')">
+      <div class="dropdown-car-emoji">🚗</div>
+      <div class="dropdown-car-info">
+        <div class="dropdown-car-name">${c.name || 'Bez nazwy'}</div>
+        <div class="dropdown-car-km">${c.km ? parseInt(c.km).toLocaleString('pl') + ' km' : '— km'}</div>
+      </div>
+      <div style="display:flex;gap:6px;align-items:center;">
+        ${c.id === state.activeId ? '<span class="dropdown-car-check">✓</span>' : ''}
+        <button onclick="event.stopPropagation();openEditCar('${c.id}')" style="background:none;border:none;color:var(--text-hint);font-size:13px;cursor:pointer;padding:4px 6px;">✏️</button>
+        ${state.cars.length > 1 ? `<button onclick="event.stopPropagation();deleteCar('${c.id}')" style="background:none;border:none;color:var(--text-hint);font-size:13px;cursor:pointer;padding:4px 6px;">🗑️</button>` : ''}
+      </div>
+    </div>
+  `).join('') + `
+    <div class="dropdown-divider"></div>
+    <div class="dropdown-add" onclick="openAddCar()">
+      <div class="dropdown-add-icon">+</div>
+      <div class="dropdown-add-text">Dodaj nowe auto</div>
+    </div>`;
+}
+
+function selectCar(id) {
+  state.activeId = id;
+  axleOpen = { front: true, rear: true };
+  dropdownOpen = false;
+  saveState();
+  renderDropdown();
+  render();
+  document.removeEventListener('click', closeDropdownOutside);
+}
+
+function openAddCar() {
+  dropdownOpen = false;
+  renderDropdown();
+  editingCarId = null;
+  document.getElementById('car-sheet-title').textContent = 'Nowe auto';
+  document.getElementById('f-carname').value = '';
+  document.getElementById('f-carkm').value = '';
+  document.getElementById('car-btn-row').innerHTML = `
+    <button class="btn-cancel" onclick="closeSheet('car-overlay')">Anuluj</button>
+    <button class="btn-save" onclick="saveCar()">Dodaj</button>`;
+  openSheet('car-overlay');
+}
+
+function openEditCar(id) {
+  dropdownOpen = false;
+  renderDropdown();
+  editingCarId = id;
+  const car = state.cars.find(c => c.id === id);
+  document.getElementById('car-sheet-title').textContent = 'Edytuj auto';
+  document.getElementById('f-carname').value = car.name || '';
+  document.getElementById('f-carkm').value = car.km || '';
+  document.getElementById('car-btn-row').innerHTML = `
+    <button class="btn-cancel" onclick="closeSheet('car-overlay')">Anuluj</button>
+    <button class="btn-save" onclick="saveCar()">Zapisz</button>`;
+  openSheet('car-overlay');
+}
+
+function saveCar() {
+  const name = document.getElementById('f-carname').value || 'Bez nazwy';
+  const km = document.getElementById('f-carkm').value;
+  if (editingCarId) {
+    const car = state.cars.find(c => c.id === editingCarId);
+    if (car) { car.name = name; car.km = km; }
+  } else {
+    const car = newCar(name, km);
+    state.cars.push(car);
+    state.activeId = car.id;
+  }
+  saveState(); closeSheet('car-overlay'); renderDropdown(); render();
+}
+
+function deleteCar(id) {
+  if (!confirm('Usunąć to auto wraz ze wszystkimi danymi?')) return;
+  state.cars = state.cars.filter(c => c.id !== id);
+  if (state.activeId === id) state.activeId = state.cars[0]?.id;
+  saveState(); dropdownOpen = false; renderDropdown(); render();
+}
+
+// STATUS
 function getStatus(svc) {
   if (!svc.lastDate && !svc.lastKm) return 'unknown';
+  const car = activeCar();
   const now = new Date(); let pct = 0;
-  if (svc.lastDate && svc.intervalDays) {
-    const diff = (now - new Date(svc.lastDate)) / 86400000;
-    pct = Math.max(pct, diff / svc.intervalDays);
-  }
-  if (svc.lastKm && svc.intervalKm && state.car.km) {
-    const driven = parseInt(state.car.km) - parseInt(svc.lastKm);
-    if (driven > 0) pct = Math.max(pct, driven / svc.intervalKm);
-  }
-  if (pct >= 1) return 'overdue';
-  if (pct >= 0.8) return 'soon';
-  return 'ok';
+  if (svc.lastDate && svc.intervalDays) pct = Math.max(pct, (now - new Date(svc.lastDate)) / 86400000 / svc.intervalDays);
+  if (svc.lastKm && svc.intervalKm && car.km) { const d = parseInt(car.km) - parseInt(svc.lastKm); if (d > 0) pct = Math.max(pct, d / svc.intervalKm); }
+  return pct >= 1 ? 'overdue' : pct >= 0.8 ? 'soon' : 'ok';
 }
-
-function badge(st) {
-  const m = { ok: ['OK','badge-ok','dot-ok'], soon: ['Wkrótce','badge-soon','dot-soon'], overdue: ['Zaległe!','badge-overdue','dot-overdue'], unknown: ['Brak danych','badge-unknown','dot-unknown'] };
-  return m[st];
-}
-
+function badgeInfo(st) { return {ok:['OK','badge-ok','dot-ok'],soon:['Wkrótce','badge-soon','dot-soon'],overdue:['Zaległe!','badge-overdue','dot-overdue'],unknown:['Brak danych','badge-unknown','dot-unknown']}[st]; }
 function detailText(svc) {
   if (!svc.lastDate && !svc.lastKm) return 'Kliknij, aby dodać datę serwisu';
-  const p = [];
-  if (svc.lastDate) p.push(svc.lastDate);
-  if (svc.lastKm) p.push(parseInt(svc.lastKm).toLocaleString('pl') + ' km');
-  return p.join(' · ');
+  return [svc.lastDate, svc.lastKm ? parseInt(svc.lastKm).toLocaleString('pl') + ' km' : null].filter(Boolean).join(' · ');
 }
+function seasonLabel(s) { return {summer:['Letnie','season-summer'],winter:['Zimowe','season-winter'],allseason:['Całoroczne','season-allseason']}[s]||['—','']; }
+function tireEmoji(s) { return {summer:'☀️',winter:'❄️',allseason:'🌤️'}[s]||'⚫'; }
 
+// RENDER
 function render() {
-  // car
-  document.getElementById('car-name-display').textContent = state.car.name || 'Moje Auto';
-  document.getElementById('car-km-display').textContent = state.car.km ? 'Przebieg: ' + parseInt(state.car.km).toLocaleString('pl') + ' km' : 'Przebieg: — km';
-  document.getElementById('topbar-sub').textContent = state.car.name || 'Tracker serwisowy';
+  const car = activeCar();
+  if (!car) return;
 
-  // stats
   let attn = 0;
-  state.services.forEach(s => { const st = getStatus(s); if (st === 'overdue' || st === 'soon') attn++; });
-  const totalCost = state.history.reduce((s, h) => s + (parseFloat(h.cost) || 0), 0);
-  document.getElementById('s-total').textContent = state.services.length;
+  car.services.forEach(s => { const st = getStatus(s); if (st==='overdue'||st==='soon') attn++; });
+  const totalCost = car.history.reduce((s,h) => s + (parseFloat(h.cost)||0), 0);
+  document.getElementById('s-total').textContent = car.services.length;
   document.getElementById('s-attn').textContent = attn;
   document.getElementById('s-cost').textContent = totalCost > 0 ? Math.round(totalCost).toLocaleString('pl') + ' zł' : '0 zł';
 
-  // services
-  document.getElementById('services-list').innerHTML = state.services.map(svc => {
-    const st = getStatus(svc);
-    const [btxt, bcls, dcls] = badge(st);
+  document.getElementById('services-list').innerHTML = car.services.map(svc => {
+    const st = getStatus(svc); const [btxt,bcls,dcls] = badgeInfo(st);
     return `<div class="svc-card" onclick="openSvcSheet('${svc.id}')">
       <div class="svc-dot ${dcls}"></div>
-      <div class="svc-body">
-        <div class="svc-name">${svc.name}</div>
-        <div class="svc-detail">${detailText(svc)}</div>
-      </div>
+      <div class="svc-body"><div class="svc-name">${svc.name}</div><div class="svc-detail">${detailText(svc)}</div></div>
       <span class="badge ${bcls}">${btxt}</span>
     </div>`;
   }).join('');
 
-  // history
+  renderTires();
+
   const hl = document.getElementById('history-list');
-  if (!state.history.length) { hl.innerHTML = '<div class="empty-msg">Brak wpisów — dodaj pierwszy serwis!</div>'; return; }
-  hl.innerHTML = [...state.history].reverse().map((h, ri) => {
-    const i = state.history.length - 1 - ri;
+  if (!car.history.length) { hl.innerHTML = '<div class="empty-msg">Brak wpisów — dodaj pierwszy serwis!</div>'; return; }
+  hl.innerHTML = [...car.history].reverse().map((h,ri) => {
+    const i = car.history.length - 1 - ri;
     return `<div class="hist-item">
       <span class="hist-date">${h.date}</span>
-      <div class="hist-info">
-        <div class="hist-name">${h.service}</div>
-        ${h.note ? `<div class="hist-note">${h.note}</div>` : ''}
-      </div>
+      <div class="hist-info"><div class="hist-name">${h.service}</div>${h.note?`<div class="hist-note">${h.note}</div>`:''}</div>
       <span class="hist-cost">${h.cost ? Math.round(h.cost).toLocaleString('pl') + ' zł' : '—'}</span>
       <button class="hist-del" onclick="delHistory(${i})">×</button>
     </div>`;
   }).join('');
 }
 
+function renderTires() {
+  const car = activeCar(); if (!car) return;
+  const front = car.tires.filter(t => t.axle==='front');
+  const rear  = car.tires.filter(t => t.axle==='rear');
+  function axleHTML(label, axle, list) {
+    const isOpen = axleOpen[axle];
+    const rows = list.length === 0
+      ? `<div class="no-tires">Brak opon — kliknij "+ Dodaj oponę"</div>`
+      : list.map(t => {
+          const idx = car.tires.indexOf(t);
+          const [slbl,scls] = seasonLabel(t.season);
+          const meta = [t.brand, t.year?'rok '+t.year:null].filter(Boolean).join(' · ');
+          return `<div class="tire-row">
+            <div class="tire-icon">${tireEmoji(t.season)}</div>
+            <div class="tire-info"><div class="tire-size">${t.width}/${t.profile}/R${t.rim}</div>${meta?`<div class="tire-meta">${meta}</div>`:''}</div>
+            <span class="tire-season ${scls}">${slbl}</span>
+            <button class="tire-del" onclick="delTire(${idx})">×</button>
+          </div>`;
+        }).join('');
+    return `<div class="axle-group">
+      <div class="axle-header" onclick="toggleAxle('${axle}')">
+        <div class="axle-label">Oś ${label} <span class="axle-count">${list.length}</span></div>
+        <span class="axle-chevron ${isOpen?'open':''}">▼</span>
+      </div>
+      <div class="axle-body ${isOpen?'':'hidden'}">${rows}</div>
+    </div>`;
+  }
+  document.getElementById('tires-list').innerHTML = axleHTML('przednia','front',front) + axleHTML('tylna','rear',rear);
+}
+
+function toggleAxle(axle) { axleOpen[axle] = !axleOpen[axle]; renderTires(); }
+function delTire(i) { if (confirm('Usunąć tę oponę?')) { activeCar().tires.splice(i,1); saveState(); renderTires(); } }
+
+// SHEETS
 function openSheet(id) { document.getElementById(id).classList.add('open'); }
 function closeSheet(id) { document.getElementById(id).classList.remove('open'); }
-function closeOnBg(e, id) { if (e.target === document.getElementById(id)) closeSheet(id); }
-
-function openCarSheet() {
-  document.getElementById('f-carname').value = state.car.name || '';
-  document.getElementById('f-carkm').value = state.car.km || '';
-  openSheet('car-overlay');
-}
-function saveCar() {
-  state.car.name = document.getElementById('f-carname').value;
-  state.car.km = document.getElementById('f-carkm').value;
-  save(); closeSheet('car-overlay'); render();
-}
+function closeOnBg(e,id) { if (e.target===document.getElementById(id)) closeSheet(id); }
 
 function openSvcSheet(id) {
   activeSvcId = id;
-  const svc = state.services.find(s => s.id === id);
+  const svc = activeCar().services.find(s => s.id===id);
   document.getElementById('svc-sheet-title').textContent = svc.name;
-  document.getElementById('f-sdate').value = svc.lastDate || '';
-  document.getElementById('f-skm').value = svc.lastKm || '';
+  document.getElementById('f-sdate').value = svc.lastDate||'';
+  document.getElementById('f-skm').value = svc.lastKm||'';
   openSheet('svc-overlay');
 }
 function saveService() {
-  const svc = state.services.find(s => s.id === activeSvcId);
+  const svc = activeCar().services.find(s => s.id===activeSvcId);
   svc.lastDate = document.getElementById('f-sdate').value;
   svc.lastKm = document.getElementById('f-skm').value;
-  save(); closeSheet('svc-overlay'); render();
+  saveState(); closeSheet('svc-overlay'); render();
+}
+
+function openTireSheet() {
+  ['f-tw','f-tp','f-tr','f-tyear','f-tbrand'].forEach(id => document.getElementById(id).value='');
+  document.getElementById('f-taxle').value='front';
+  document.getElementById('f-tseason').value='summer';
+  document.getElementById('tire-preview').textContent='— / — / —';
+  openSheet('tire-overlay');
+}
+function updateTirePreview() {
+  const w=document.getElementById('f-tw').value||'—';
+  const p=document.getElementById('f-tp').value||'—';
+  const r=document.getElementById('f-tr').value||'—';
+  document.getElementById('tire-preview').textContent=`${w} / ${p} / R${r}`;
+}
+function saveTire() {
+  const w=document.getElementById('f-tw').value, p=document.getElementById('f-tp').value, r=document.getElementById('f-tr').value;
+  if (!w||!p||!r) { alert('Wpisz rozmiar opony'); return; }
+  activeCar().tires.push({ width:w, profile:p, rim:r, year:document.getElementById('f-tyear').value, axle:document.getElementById('f-taxle').value, season:document.getElementById('f-tseason').value, brand:document.getElementById('f-tbrand').value });
+  saveState(); closeSheet('tire-overlay'); renderTires();
 }
 
 function openAddSheet() {
   const sel = document.getElementById('f-atype');
-  sel.innerHTML = state.services.map(s => `<option value="${s.name}">${s.name}</option>`).join('') + '<option value="Inny">Inny serwis</option>';
-  document.getElementById('f-anote').value = '';
-  document.getElementById('f-adate').value = new Date().toISOString().split('T')[0];
-  document.getElementById('f-acost').value = '';
+  sel.innerHTML = activeCar().services.map(s=>`<option value="${s.name}">${s.name}</option>`).join('')+'<option value="Inny">Inny serwis</option>';
+  document.getElementById('f-anote').value='';
+  document.getElementById('f-adate').value=new Date().toISOString().split('T')[0];
+  document.getElementById('f-acost').value='';
   openSheet('add-overlay');
 }
 function saveAdd() {
-  const type = document.getElementById('f-atype').value;
-  const note = document.getElementById('f-anote').value;
-  const date = document.getElementById('f-adate').value;
-  const cost = parseFloat(document.getElementById('f-acost').value) || 0;
+  const type=document.getElementById('f-atype').value, note=document.getElementById('f-anote').value;
+  const date=document.getElementById('f-adate').value, cost=parseFloat(document.getElementById('f-acost').value)||0;
   if (!date) return;
-  state.history.push({ service: type, note, date, cost });
-  const svc = state.services.find(s => s.name === type);
-  if (svc) { svc.lastDate = date; if (state.car.km) svc.lastKm = state.car.km; }
-  save(); closeSheet('add-overlay'); render();
+  const car = activeCar();
+  car.history.push({service:type,note,date,cost});
+  const svc = car.services.find(s=>s.name===type);
+  if (svc) { svc.lastDate=date; if (car.km) svc.lastKm=car.km; }
+  saveState(); closeSheet('add-overlay'); render();
 }
-function delHistory(i) {
-  if (confirm('Usunąć ten wpis?')) { state.history.splice(i, 1); save(); render(); }
-}
+function delHistory(i) { if (confirm('Usunąć ten wpis?')) { activeCar().history.splice(i,1); saveState(); render(); } }
 
-if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.register('sw.js').catch(() => {});
-}
-
+if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(()=>{});
+renderDropdown();
 render();
 </script>
 </body>
